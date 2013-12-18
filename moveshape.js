@@ -6,15 +6,20 @@ $(function () {
     //Create Representation of the Server's Move Shape
     var hub = $.connection.MoveShape,
         $shape = $("#shape");
+        $clients = $("#clientCount");
 
     //Extend the Hub and add shapeMoved that is to be called from the server
     $.extend(hub.client, {
-        shapeMoved: function (cid, x, y) {
+        ShapeMoved: function (cid, x, y) {
             //Check to make sure that the invocation did not come from myself
             if (cid !== $.connection.hub.id) {
                 //Update the position of the object on the screen
                 $shape.css({ left: x, top: y });
             }
+        },
+        ClientCountChanged: function (count) {
+            console.log("Clients is now " + count);
+            $clients.html(count);
         }
     });
 

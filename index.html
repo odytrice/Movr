@@ -3,15 +3,29 @@
 <head>
     <title>A Simple SignalR Application</title>
     <style>
+        html,body{
+            padding:0px;margin:0px;
+            width:100%;height:100%;
+            font-family:'Segoe UI','Arial Black', Gadget, sans-serif;
+        }
         #shape{
             width:100px;
             height:100px;
             background-color: #0094ff;
+            cursor:move;
+        }
+        #clientCount{
+            position:absolute;
+            top:0;
+            right:10px;
+            font-size:72px;
+            color:#cdcdcd;
         }
     </style>
 </head>
 <body>
     <div id="shape"></div>
+    <span id="clientCount">2</span>
 
     <script src="Scripts/jquery-1.6.4.js"></script>
     <script src="Scripts/jquery-ui-1.10.3.js"></script>
