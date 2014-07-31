@@ -8,7 +8,7 @@ using System.Web;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace Movr.MoveShape
+namespace Movr.Hubs
 {
     /// <summary>
     /// A Hub is a thing that clients connect to to talk to each other
@@ -23,37 +23,59 @@ namespace Movr.MoveShape
         //Server Side Method to Move the Shape of the Global State
         public void MoveShape(int x, int y)
         {
-            ///Call Shaped Moved on Client Code
-            ///Passing the current connectionID and the co-ordinates
+            //Move the Shape on the Server
             SetShape(x, y);
+
+            ///Notify Everyone that the Shape has moved
+            ///Passing the current connectionID and the co-ordinates
             Clients.Others.ShapeMoved(Context.ConnectionId, x, y);
         }
 
         private void SetShape(int x, int y)
         {
+            //Set Shape's Location
             _location = new Point(x, y);
         }
 
+        //This happens whenever a New Client Connects
         public override Task OnConnected()
         {
-            _connections.TryAdd(Context.ConnectionId, null);
-            Clients.All.ClientCountChanged(_connections.Count);
-            Clients.Client(Context.ConnectionId).Initialize(_location.X, _location.Y);
+            NewConnection();
+
+            //Return SignlaR's On Connected Method as a Task
             return base.OnConnected();
         }
 
+        //This happens whenever a New Client Regains Connection
         public override Task OnReconnected()
         {
-            _connections.TryAdd(Context.ConnectionId, null);
-            Clients.All.ClientCountChanged(_connections.Count);
-            Clients.Client(Context.ConnectionId).Initialize(_location.X, _location.Y);
+            NewConnection();
+
+            //Return SignlaR's On Reconnected Method as a Task
             return base.OnReconnected();
         }
 
+        
+        private void NewConnection()
+        {
+            //Add to Connections Dictionary
+            _connections.TryAdd(Context.ConnectionId, null);
+
+            //Notify All Clients that a new Client has been connected
+            Clients.All.ClientCountChanged(_connections.Count);
+
+            //Bring Current up to Speed with latest coordinates
+            Clients.Client(Context.ConnectionId).Initialize(_location.X, _location.Y);
+        }
+
+        //This Happens Whenever a Client is Disconnected
         public override Task OnDisconnected()
         {
             object value;
+            //Try to Remove the ConnectionID from the Dictionary
             _connections.TryRemove(Context.ConnectionId, out value);
+
+            //Notify Everyone that the client count has reduced
             Clients.All.ClientCountChanged(_connections.Count, _location.X, _location.Y);
             return base.OnDisconnected();
         }
