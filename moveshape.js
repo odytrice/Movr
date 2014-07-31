@@ -15,10 +15,11 @@ $(function () {
             $shape.css({ left: x, top: y });
         },
         ClientCountChanged: function (count) {
-            console.log("Clients is now " + count);
+            //Update the Client Count on the Page
             $clients.html(count);
         },
         Initialize: function (x, y) {
+            //Synchronize Client with Server's State
             $shape.css({ left: x, top: y, visibility: "visible" });
         }
     });
@@ -31,7 +32,7 @@ $(function () {
         $shape.draggable({
             //When the drag takes place, call the method moveshape on the Hub
             drag: function () {
-                hub.server.moveShape(this.offsetLeft, this.offsetTop || 0)
+                hub.server.moveShape(this.offsetLeft || 0, this.offsetTop || 0)
             }
         })
     });
